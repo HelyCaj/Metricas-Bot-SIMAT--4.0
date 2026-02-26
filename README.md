@@ -1,1 +1,0 @@
-# Metricas-Bot-SIMAT--4.0
