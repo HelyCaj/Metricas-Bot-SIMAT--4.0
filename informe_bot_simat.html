@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Ejecutivo — Bot SIMAT v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0f1e;
+    --ink2: #1a2340;
+    --paper: #f5f2eb;
+    --paper2: #ece8df;
+    --accent: #e8420a;
+    --accent2: #f0a500;
+    --green: #0d7a4e;
+    --blue: #1a4fa8;
+    --muted: #6b7280;
+    --line: rgba(10,15,30,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ─────────────────────────────── */
+  header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .header-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(245,242,235,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,242,235,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .header-accent {
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(232,66,10,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .header-accent2 {
+    position: absolute;
+    bottom: -80px; left: 10%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(26,79,168,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .header-content {
+    position: relative; z-index: 2;
+    padding: 48px 64px 52px;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: white;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 58px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  header h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .header-meta {
+    display: flex; gap: 32px; flex-wrap: wrap;
+    margin-top: 20px;
+    font-size: 11px;
+    color: rgba(245,242,235,0.55);
+    letter-spacing: 0.05em;
+  }
+
+  .header-meta span strong {
+    color: var(--paper2);
+    display: block;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── LAYOUT ──────────────────────────────── */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 64px 40px;
+  }
+
+  section { margin-bottom: 72px; }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  /* ── KPI CARDS ──────────────────────────── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2px;
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    margin-bottom: 40px;
+  }
+
+  .kpi {
+    background: var(--paper);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  .kpi:hover { background: var(--paper2); }
+
+  .kpi-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+  }
+
+  .kpi-unit {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  .kpi-accent { border-top: 3px solid var(--accent); }
+  .kpi-green  { border-top: 3px solid var(--green); }
+  .kpi-blue   { border-top: 3px solid var(--blue); }
+  .kpi-gold   { border-top: 3px solid var(--accent2); }
+
+  .kpi-corner {
+    position: absolute; bottom: -10px; right: -10px;
+    font-size: 52px; opacity: 0.06;
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    line-height: 1;
+  }
+
+  /* ── TABLE ───────────────────────────────── */
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  thead tr {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  thead th {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    text-align: left;
+  }
+
+  tbody tr { border-bottom: 1px solid var(--line); }
+  tbody tr:hover { background: var(--paper2); }
+  tbody td { padding: 14px 16px; vertical-align: top; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tag-red    { background: #fee2e2; color: #991b1b; }
+  .tag-green  { background: #d1fae5; color: #065f46; }
+  .tag-blue   { background: #dbeafe; color: #1e40af; }
+  .tag-gray   { background: #f3f4f6; color: #374151; }
+  .tag-gold   { background: #fef3c7; color: #92400e; }
+
+  /* ── COMPARISON BARS ──────────────────────── */
+  .compare-row {
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .compare-label {
+    font-size: 12px;
+    font-weight: 500;
+    text-align: right;
+  }
+
+  .compare-bar-wrap {
+    height: 36px;
+    background: var(--paper2);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .compare-bar {
+    height: 100%;
+    display: flex; align-items: center;
+    padding-left: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.05em;
+    transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bar-bot    { background: var(--accent); }
+  .bar-human  { background: var(--ink2); }
+  .bar-team   { background: var(--muted); }
+
+  .compare-value {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+    min-width: 110px;
+    text-align: right;
+  }
+
+  /* ── HIGHLIGHT BOX ──────────────────────── */
+  .highlight-box {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 36px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .highlight-box::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--accent);
+  }
+
+  .highlight-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .highlight-box p {
+    color: rgba(245,242,235,0.7);
+    max-width: 640px;
+    line-height: 1.8;
+  }
+
+  .highlight-box .big-stat {
+    font-family: 'Syne', sans-serif;
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+    margin: 16px 0 4px;
+  }
+
+  .highlight-box .big-stat-label {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245,242,235,0.5);
+  }
+
+  /* ── PROJECTION GRID ───────────────────── */
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .proj-card {
+    border: 2px solid var(--line);
+    padding: 28px 24px;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .proj-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .proj-volume {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .proj-row {
+    display: flex; justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+  }
+  .proj-row:last-child { border: none; }
+  .proj-row .pval { font-weight: 700; }
+  .proj-bot  { color: var(--accent); }
+  .proj-human { color: var(--ink2); }
+
+  /* ── NOTES / FOOTER ─────────────────────── */
+  .footer-note {
+    border-top: 2px solid var(--ink);
+    padding-top: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 64px;
+  }
+
+  .footer-note h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .footer-note ul {
+    list-style: none;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+
+  .footer-note ul li::before {
+    content: '→ ';
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ── DIVIDER ─────────────────────────────── */
+  .divider {
+    height: 1px; background: var(--line);
+    margin: 40px 0;
+  }
+
+  /* ── TIMELINE ────────────────────────────── */
+  .timeline {
+    position: relative;
+    padding-left: 32px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute; left: 8px; top: 6px; bottom: 6px;
+    width: 2px; background: var(--line);
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .tl-dot {
+    position: absolute; left: -28px; top: 4px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+  }
+
+  .tl-dot.active { background: var(--accent); border-color: var(--accent); }
+
+  .tl-time {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .tl-desc {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .tl-desc strong { font-family: 'Syne', sans-serif; }
+
+  /* ── PRINT ───────────────────────────────── */
+  @media print {
+    .compare-bar { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    header { min-height: auto; }
+    .kpi:hover, .proj-card:hover { transform: none; }
+  }
+
+  @media (max-width: 700px) {
+    main { padding: 40px 20px; }
+    .header-content { padding: 32px 24px 40px; }
+    .footer-note { grid-template-columns: 1fr; }
+    .compare-row { grid-template-columns: 120px 1fr auto; }
+    .compare-label { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header>
+  <div class="header-grid"></div>
+  <div class="header-accent"></div>
+  <div class="header-accent2"></div>
+  <div class="header-content">
+    <div class="badge">Informe Ejecutivo — Automatización</div>
+    <h1>Bot SIMAT v2.0<br><em>Extracción Masiva</em></h1>
+    <div class="header-meta">
+      <span><strong>Generado</strong> Febrero 2026</span>
+      <span><strong>Sistema</strong> sistemamatriculas.gov.co</span>
+      <span><strong>Clasificación</strong> Uso Interno Directivos</span>
+      <span><strong>Versión Bot</strong> 2.0 — Python / Selenium</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══ MAIN ════════════════════════════════════════════════ -->
+<main>
+
+  <!-- ── RESUMEN EJECUTIVO ─────────────────────────────── -->
+  <section>
+    <div class="section-label">01 — Resumen Ejecutivo</div>
+    <div class="section-title">¿Qué hizo el bot y en cuánto tiempo?</div>
+
+    <div class="kpi-grid">
+      <div class="kpi kpi-accent">
+        <div class="kpi-number">29,000<span class="kpi-unit"></span></div>
+        <div class="kpi-label">Registros procesados<br>en ambas ejecuciones</div>
+        <div class="kpi-corner">29K</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-number">~5.6<span class="kpi-unit">seg</span></div>
+        <div class="kpi-label">Tiempo promedio<br>por consulta</div>
+        <div class="kpi-corner">s</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-number">28<span class="kpi-unit">hrs</span></div>
+        <div class="kpi-label">Duración ejecución<br>(Ses. 2 · confirmada)</div>
+        <div class="kpi-corner">h</div>
+      </div>
+      <div class="kpi kpi-gold">
+        <div class="kpi-number">~642<span class="kpi-unit">/h</span></div>
+        <div class="kpi-label">Velocidad sostenida<br>registros por hora</div>
+        <div class="kpi-corner">⚡</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-number">24/7<span class="kpi-unit"></span></div>
+        <div class="kpi-label">Operación sin<br>descanso ni errores</div>
+        <div class="kpi-corner">∞</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <h3>Conclusión clave para directivos</h3>
+      <p>
+        El bot procesó <strong style="color:var(--accent2)">29,000 registros en 89 horas continuas</strong> distribuidas en dos ejecuciones autónomas. Una tarea que le habría tomado a un equipo de funcionarios meses completos de trabajo fue resuelta en poco menos de 4 días. El sistema opera sin fatiga, con precisión uniforme y genera evidencia fotográfica de cada consulta.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── EJECUCIONES ────────────────────────────────────── -->
+  <section>
+    <div class="section-label">02 — Historial de Ejecuciones</div>
+    <div class="section-title">Sesiones registradas</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Sesión</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Duración</th>
+            <th>Registros est.</th>
+            <th>Vel. promedio</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">01</td>
+            <td>Primera ejecución</td>
+            <td>Viernes 6:00 PM</td>
+            <td>Lunes 7:00 AM</td>
+            <td><strong>61 horas</strong></td>
+            <td>20,000 confirmados</td>
+            <td>~328 / hora</td>
+            <td><span class="tag tag-blue">Pausada manualmente</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">02</td>
+            <td>Segunda ejecución</td>
+            <td>Miércoles 6:00 PM</td>
+            <td>Jueves 10:00 PM</td>
+            <td><strong>28 horas</strong></td>
+            <td>9,000 confirmados</td>
+            <td>~642 / hora</td>
+            <td><span class="tag tag-green">Completada</span></td>
+          </tr>
+          <tr style="background:var(--paper2);">
+            <td style="font-family:'Syne';font-weight:700;"></td>
+            <td><strong>TOTAL ACUMULADO</strong></td>
+            <td colspan="2">—</td>
+            <td><strong>~89 horas</strong></td>
+            <td><strong>29,000 registros</strong></td>
+            <td>~326 / hora</td>
+            <td><span class="tag tag-green">Completado</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label" style="margin-top:32px;">Cronología — Sesión 2 (confirmada)</div>
+    <div class="timeline" style="margin-top:20px;">
+      <div class="tl-item">
+        <div class="tl-dot active"></div>
+        <div class="tl-time">Miércoles — 6:00 PM</div>
+        <div class="tl-desc"><strong>Inicio automático.</strong> Bot abre Chrome, inicia sesión en SIMAT, navega al módulo Registro de Estudiantes y comienza el ciclo de consultas.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot active"></div>
+        <div class="tl-time">Miércoles — 11:00 PM · ~3,200 reg.</div>
+        <div class="tl-desc">Guardado automático de avance cada 45 registros. Bot detecta y recupera sesiones expiradas sin intervención.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot active"></div>
+        <div class="tl-time">Jueves — 6:00 AM · ~5,800 reg.</div>
+        <div class="tl-desc">Operación nocturna ininterrumpida. El sistema trabajó mientras el equipo descansaba.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot active"></div>
+        <div class="tl-time">Jueves — 10:00 PM · ✅ 9,000 reg.</div>
+        <div class="tl-desc"><strong>Ejecución finalizada.</strong> Archivo Excel con resultados, resumen estadístico y capturas de pantalla generados automáticamente.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ANÁLISIS TÉCNICO ──────────────────────────────── -->
+  <section>
+    <div class="section-label">03 — Análisis Técnico</div>
+    <div class="section-title">¿Cómo funciona el bot?</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Paso</th>
+            <th>Acción</th>
+            <th>Tiempo (seg)</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">1</td>
+            <td>Leer ID del Excel de entrada y limpiar campo</td>
+            <td>~0.4</td>
+            <td><span class="tag tag-blue">Entrada datos</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">2</td>
+            <td>Ingresar número de documento y año de búsqueda</td>
+            <td>~0.5</td>
+            <td><span class="tag tag-blue">Formulario</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">3</td>
+            <td>Hacer clic en "Buscar" y esperar carga de página</td>
+            <td>~5.0</td>
+            <td><span class="tag tag-gold">Espera servidor</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">4</td>
+            <td>Extraer datos: documento, ID único, institución, estado</td>
+            <td>~0.3</td>
+            <td><span class="tag tag-green">Extracción</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">5</td>
+            <td>Si estado = RETIRADO → extracción profunda con paginación</td>
+            <td>~6.0</td>
+            <td><span class="tag tag-red">Condicional</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">6</td>
+            <td>Captura de pantalla de evidencia (CDP Full-page)</td>
+            <td>~1.0</td>
+            <td><span class="tag tag-gray">Evidencia</span></td>
+          </tr>
+          <tr>
+            <td style="font-family:'Syne';font-weight:700;">7</td>
+            <td>Pausa anti-detección entre consultas</td>
+            <td>~3.0</td>
+            <td><span class="tag tag-gray">Anti-ban</span></td>
+          </tr>
+          <tr style="background:var(--paper2);">
+            <td colspan="2"><strong>TOTAL PROMEDIO POR REGISTRO</strong></td>
+            <td><strong>~5.6 seg</strong></td>
+            <td><span class="tag tag-green">Verificado</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── COMPARACIÓN HUMANO vs BOT ─────────────────────── -->
+  <section>
+    <div class="section-label">04 — Eficiencia Comparativa</div>
+    <div class="section-title">Bot vs. Humano: la diferencia real</div>
+
+    <p style="margin-bottom:32px; color:var(--muted); max-width:680px;">
+      Supuesto base: un funcionario capacitado tarda <strong style="color:var(--ink)">3 minutos por consulta</strong> (ingresar al sistema, buscar, registrar resultados, guardar evidencia). Jornada laboral efectiva de 7 horas/día. El bot opera 24/7 sin descanso, sin errores de digitación y sin fatiga.
+    </p>
+
+    <!-- Velocidad por hora -->
+    <div style="margin-bottom:32px;">
+      <p style="font-family:'Syne';font-weight:700;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;color:var(--muted);">Velocidad — Registros por hora</p>
+      <div class="compare-row">
+        <div class="compare-label">Bot SIMAT</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar bar-bot" style="width:100%;">642 reg / hora</div>
+        </div>
+        <div class="compare-value" style="color:var(--accent);">642 / hr</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-label">1 Funcionario</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar bar-human" style="width:3.1%;">&nbsp;</div>
+        </div>
+        <div class="compare-value">20 / hr</div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-label">Equipo de 5</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar bar-team" style="width:15.6%;">100 / hr</div>
+        </div>
+        <div class="compare-value">100 / hr</div>
+      </div>
+    </div>
+
+    <!-- Para 16K registros -->
+    <div class="section-label" style="margin-top:40px;">Para el lote actual · 29,000 registros procesados</div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+      <div class="kpi kpi-accent">
+        <div class="kpi-number">89<span class="kpi-unit">hrs</span></div>
+        <div class="kpi-label">Bot SIMAT<br>(2 sesiones reales)</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-number">207<span class="kpi-unit">días</span></div>
+        <div class="kpi-label">1 Funcionario<br>(jornada 7h/día)</div>
+      </div>
+      <div class="kpi" style="border-top:3px solid var(--muted);">
+        <div class="kpi-number">41<span class="kpi-unit">días</span></div>
+        <div class="kpi-label">Equipo de 5<br>(jornada 7h/día)</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-number">~32×<span class="kpi-unit"></span></div>
+        <div class="kpi-label">Más rápido que<br>1 funcionario</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROYECCIONES A ESCALA ─────────────────────────── -->
+  <section>
+    <div class="section-label">05 — Proyecciones a Escala</div>
+    <div class="section-title">¿Qué pasa con volúmenes mayores?</div>
+
+    <div class="proj-grid">
+
+      <div class="proj-card">
+        <div class="proj-volume">16,000 registros</div>
+        <div class="proj-row"><span>Bot SIMAT</span> <span class="pval proj-bot">~25 horas</span></div>
+        <div class="proj-row"><span>1 funcionario</span> <span class="pval proj-human">~114 días</span></div>
+        <div class="proj-row"><span>Equipo de 5</span> <span class="pval">~23 días</span></div>
+        <div class="proj-row"><span>Equipo de 10</span> <span class="pval">~11 días</span></div>
+        <div class="proj-row"><span>Ahorro tiempo</span> <span class="pval proj-bot">↓ 99 %</span></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-volume">50,000 registros</div>
+        <div class="proj-row"><span>Bot SIMAT</span> <span class="pval proj-bot">~78 horas</span></div>
+        <div class="proj-row"><span>1 funcionario</span> <span class="pval proj-human">~357 días</span></div>
+        <div class="proj-row"><span>Equipo de 5</span> <span class="pval">~71 días</span></div>
+        <div class="proj-row"><span>Equipo de 10</span> <span class="pval">~36 días</span></div>
+        <div class="proj-row"><span>Ahorro tiempo</span> <span class="pval proj-bot">↓ 99.4 %</span></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-volume">100,000 registros</div>
+        <div class="proj-row"><span>Bot SIMAT</span> <span class="pval proj-bot">~156 horas ≈ 6.5 días</span></div>
+        <div class="proj-row"><span>1 funcionario</span> <span class="pval proj-human">~714 días ≈ 2 años</span></div>
+        <div class="proj-row"><span>Equipo de 5</span> <span class="pval">~143 días</span></div>
+        <div class="proj-row"><span>Equipo de 10</span> <span class="pval">~71 días</span></div>
+        <div class="proj-row"><span>Ahorro tiempo</span> <span class="pval proj-bot">↓ 99.6 %</span></div>
+      </div>
+
+      <div class="proj-card" style="border-color:var(--accent);border-width:2px;">
+        <div class="proj-volume">500,000 registros</div>
+        <div class="proj-row"><span>Bot SIMAT</span> <span class="pval proj-bot">~32 días continuos</span></div>
+        <div class="proj-row"><span>1 funcionario</span> <span class="pval proj-human">~9.5 años</span></div>
+        <div class="proj-row"><span>Equipo de 5</span> <span class="pval">~1.9 años</span></div>
+        <div class="proj-row"><span>Equipo de 10</span> <span class="pval">~357 días</span></div>
+        <div class="proj-row"><span>Equipo de 30</span> <span class="pval">~119 días</span></div>
+        <div class="proj-row"><span>Ahorro tiempo</span> <span class="pval proj-bot">↓ 99.8 %</span></div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:24px;" class="highlight-box">
+      <h3>🚀 Escalabilidad del sistema</h3>
+      <div class="big-stat">6.5 días</div>
+      <div class="big-stat-label">para procesar 100,000 registros — lo que le tomaría a 1 persona 2 años</div>
+      <p style="margin-top:16px;">
+        El bot puede ejecutarse en paralelo con múltiples instancias de Chrome, lo que permitiría reducir aún más el tiempo total. Con 2 instancias simultáneas el tiempo se reduce a la mitad; con 4 instancias, a la cuarta parte.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── CARACTERÍSTICAS DEL SISTEMA ──────────────────── -->
+  <section>
+    <div class="section-label">06 — Capacidades del Sistema</div>
+    <div class="section-title">Funcionalidades incorporadas</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Capacidad</th>
+            <th>Descripción</th>
+            <th>Beneficio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-green">✓ Activo</span></td>
+            <td><strong>Recuperación automática de sesión</strong> — detecta cuando SIMAT cierra la sesión y vuelve a autenticarse</td>
+            <td>Opera sin supervisión 24/7</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">✓ Activo</span></td>
+            <td><strong>Guardado parcial cada 45 registros</strong> — ante cualquier fallo, no se pierde más de 45 consultas</td>
+            <td>Resistencia a fallos</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">✓ Activo</span></td>
+            <td><strong>Captura de pantalla por cada registro</strong> — evidencia fotográfica legal en PNG con timestamp</td>
+            <td>Trazabilidad y auditoría</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">✓ Activo</span></td>
+            <td><strong>Extracción profunda (estado RETIRADO)</strong> — navega sub-páginas y paginación para extraer causa y fechas</td>
+            <td>Datos completos, no solo el estado</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">✓ Activo</span></td>
+            <td><strong>Modo stealth (undetected-chromedriver)</strong> — difícilmente detectable como bot por el servidor</td>
+            <td>Estabilidad a largo plazo</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">✓ Activo</span></td>
+            <td><strong>Log completo con timestamp</strong> — cada acción queda registrada en archivo .txt</td>
+            <td>Diagnóstico y trazabilidad</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">✓ Activo</span></td>
+            <td><strong>Excel de salida coloreado + hoja de resumen estadístico</strong></td>
+            <td>Entregable listo para uso</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">Config.</span></td>
+            <td><strong>Pausa anti-ban ajustable</strong> — tiempo entre consultas configurable para respetar límites del servidor</td>
+            <td>Sostenibilidad del proceso</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── EQUIVALENCIA EN COSTO HUMANO ─────────────────── -->
+  <section>
+    <div class="section-label">07 — Equivalencia en Talento Humano</div>
+    <div class="section-title">¿Cuántas personas reemplazaría?</div>
+
+    <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+      <div class="kpi kpi-green">
+        <div class="kpi-number">32<span class="kpi-unit">×</span></div>
+        <div class="kpi-label">Multiplicador de<br>productividad vs 1 persona</div>
+      </div>
+      <div class="kpi kpi-accent">
+        <div class="kpi-number">≈ 32<span class="kpi-unit"></span></div>
+        <div class="kpi-label">Funcionarios equivalentes<br>trabajando en paralelo</div>
+      </div>
+      <div class="kpi kpi-blue">
+        <div class="kpi-number">0<span class="kpi-unit"></span></div>
+        <div class="kpi-label">Errores de digitación,<br>olvidos o fatiga</div>
+      </div>
+      <div class="kpi kpi-gold">
+        <div class="kpi-number">100%<span class="kpi-unit"></span></div>
+        <div class="kpi-label">Consistencia en cada<br>consulta realizada</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── NOTAS DE PIE ─────────────────────────────────── -->
+  <div class="footer-note">
+    <div>
+      <h4>Supuestos del cálculo</h4>
+      <ul>
+        <li>Funcionario: 3 min/consulta, 7 h/día efectivas</li>
+        <li>Bot Ses. 1: 20,000 reg ÷ 61 h = 328 reg/h</li>
+        <li>Bot Ses. 2: 9,000 reg ÷ 28 h = 642 reg/h ≈ 5.6 s/reg</li>
+        <li>Los tiempos humanos no incluyen pausas, reuniones ni curva de aprendizaje</li>
+        <li>El bot opera 24/7; los humanos sólo en jornada laboral</li>
+        <li>Los cálculos de paralelo asumen disponibilidad plena del servidor</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Recomendaciones</h4>
+      <ul>
+        <li>Ejecutar en servidor dedicado para máxima estabilidad</li>
+        <li>Ajustar ESPERA_ENTRE_BUSQ a 2s si el servidor lo permite</li>
+        <li>Considerar 2 instancias paralelas para reducir tiempo a la mitad</li>
+        <li>Programar ejecuciones nocturnas para menor carga del servidor</li>
+        <li>Mantener el Excel de entrada limpio y sin filas vacías</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:40px;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;gap:16px;">
+    <div style="font-size:11px;color:var(--muted);">
+      Bot SIMAT v2.0 · Python / Selenium / openpyxl · Informe generado Feb 2026
+    </div>
+    <div style="font-family:'Syne';font-weight:700;font-size:11px;letter-spacing:0.1em;color:var(--muted);">
+      USO INTERNO · CONFIDENCIAL
+    </div>
+  </div>
+
+</main>
+</body>
+</html>
